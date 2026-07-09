@@ -23,6 +23,8 @@ publish/
 .env
 .env.*
 !.env.example
+MoneyFlow.Api/appsettings.json
+MoneyFlow.Api/appsettings.Development.json
 
 # Docker
 docker-compose.override.yml
