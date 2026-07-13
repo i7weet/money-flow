@@ -1,4 +1,4 @@
-using Domain.Entities;
+using MoneyFlow.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

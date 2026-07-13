@@ -1,4 +1,4 @@
-namespace Domain.Enums;
+namespace MoneyFlow.Domain.Enums;
 
 public enum TransactionType
 {

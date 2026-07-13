@@ -25,7 +25,7 @@ namespace MoneyFlow.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Domain.Entities.Account", b =>
+            modelBuilder.Entity("MoneyFlow.Domain.Entities.Account", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -69,7 +69,7 @@ namespace MoneyFlow.Infrastructure.Persistence.Migrations
                     b.ToTable("accounts", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.Category", b =>
+            modelBuilder.Entity("MoneyFlow.Domain.Entities.Category", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -112,7 +112,7 @@ namespace MoneyFlow.Infrastructure.Persistence.Migrations
                     b.ToTable("categories", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.Tag", b =>
+            modelBuilder.Entity("MoneyFlow.Domain.Entities.Tag", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -139,7 +139,7 @@ namespace MoneyFlow.Infrastructure.Persistence.Migrations
                     b.ToTable("tags", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.Transaction", b =>
+            modelBuilder.Entity("MoneyFlow.Domain.Entities.Transaction", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -191,7 +191,7 @@ namespace MoneyFlow.Infrastructure.Persistence.Migrations
                     b.ToTable("transactions", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.TransactionTag", b =>
+            modelBuilder.Entity("MoneyFlow.Domain.Entities.TransactionTag", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -213,7 +213,7 @@ namespace MoneyFlow.Infrastructure.Persistence.Migrations
                     b.ToTable("transaction_tags", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.User", b =>
+            modelBuilder.Entity("MoneyFlow.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -240,9 +240,9 @@ namespace MoneyFlow.Infrastructure.Persistence.Migrations
                     b.ToTable("users", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.Account", b =>
+            modelBuilder.Entity("MoneyFlow.Domain.Entities.Account", b =>
                 {
-                    b.OwnsOne("Domain.Common.Money", "OpeningBalance", b1 =>
+                    b.OwnsOne("MoneyFlow.Domain.Common.Money", "OpeningBalance", b1 =>
                         {
                             b1.Property<Guid>("AccountId")
                                 .HasColumnType("uuid");
@@ -271,17 +271,17 @@ namespace MoneyFlow.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Entities.Category", b =>
+            modelBuilder.Entity("MoneyFlow.Domain.Entities.Category", b =>
                 {
-                    b.HasOne("Domain.Entities.Category", null)
+                    b.HasOne("MoneyFlow.Domain.Entities.Category", null)
                         .WithMany()
                         .HasForeignKey("ParentCategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("Domain.Entities.Transaction", b =>
+            modelBuilder.Entity("MoneyFlow.Domain.Entities.Transaction", b =>
                 {
-                    b.OwnsOne("Domain.Common.Money", "Amount", b1 =>
+                    b.OwnsOne("MoneyFlow.Domain.Common.Money", "Amount", b1 =>
                         {
                             b1.Property<Guid>("TransactionId")
                                 .HasColumnType("uuid");
@@ -306,7 +306,7 @@ namespace MoneyFlow.Infrastructure.Persistence.Migrations
                                 .HasForeignKey("TransactionId");
                         });
 
-                    b.OwnsOne("Domain.Common.Money", "CounterAmount", b1 =>
+                    b.OwnsOne("MoneyFlow.Domain.Common.Money", "CounterAmount", b1 =>
                         {
                             b1.Property<Guid>("TransactionId")
                                 .HasColumnType("uuid");

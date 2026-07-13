@@ -1,5 +1,5 @@
-using Domain.Common;
-using Domain.Entities;
+using MoneyFlow.Domain.Common;
+using MoneyFlow.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

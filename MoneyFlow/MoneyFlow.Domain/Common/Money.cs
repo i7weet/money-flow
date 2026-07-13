@@ -1,4 +1,4 @@
-namespace Domain.Common;
+namespace MoneyFlow.Domain.Common;
 
 public sealed record Money
 {

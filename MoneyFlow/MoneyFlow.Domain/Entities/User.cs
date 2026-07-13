@@ -1,6 +1,6 @@
-using Domain.Common;
+using MoneyFlow.Domain.Common;
 
-namespace Domain.Entities;
+namespace MoneyFlow.Domain.Entities;
 
 public sealed class User : Entity
 {
