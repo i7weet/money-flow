@@ -1,14 +1,11 @@
-using Domain.Entities;
+using MoneyFlow.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace MoneyFlow.Infrastructure.Persistence;
 
 public sealed class MoneyFlowDbContext : DbContext
 {
-    public MoneyFlowDbContext(DbContextOptions<MoneyFlowDbContext> options)
-        : base(options)
-    {
-    }
+    public MoneyFlowDbContext(DbContextOptions<MoneyFlowDbContext> options) : base(options) { }
 
     public DbSet<User> Users => Set<User>();
 

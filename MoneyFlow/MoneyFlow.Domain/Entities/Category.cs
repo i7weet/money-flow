@@ -1,7 +1,7 @@
-using Domain.Common;
-using Domain.Enums;
+using MoneyFlow.Domain.Common;
+using MoneyFlow.Domain.Enums;
 
-namespace Domain.Entities;
+namespace MoneyFlow.Domain.Entities;
 
 public sealed class Category : Entity
 {
