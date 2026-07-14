@@ -5,30 +5,7 @@ namespace MoneyFlow.Domain.Entities;
 
 public sealed class Category : Entity
 {
-    private Category()
-    {
-        Name = string.Empty;
-    }
-
-    public Category(
-        Guid id,
-        Guid userId,
-        string name,
-        CategoryType type,
-        Guid? parentCategoryId,
-        DateTimeOffset createdAt) : base(id)
-    {
-        if (userId == Guid.Empty)
-        {
-            throw new ArgumentException("User id cannot be empty.", nameof(userId));
-        }
-
-        UserId = userId;
-        Name = NormalizeRequired(name, nameof(name));
-        Type = type;
-        ParentCategoryId = parentCategoryId;
-        CreatedAt = createdAt;
-    }
+    public const int MaxNameLength = 128;
 
     public Guid UserId { get; private set; }
 
@@ -44,7 +21,74 @@ public sealed class Category : Entity
 
     public DateTimeOffset? ArchivedAt { get; private set; }
 
-    private static string NormalizeRequired(string? value, string paramName)
+    private Category()
+    {
+        Name = string.Empty;
+    }
+
+    public Category(
+        Guid id,
+        Guid userId,
+        string name,
+        CategoryType type,
+        Guid? parentCategoryId,
+        DateTimeOffset createdAt) : base(id)
+    {
+        if (userId == Guid.Empty)
+            throw new ArgumentException("User id cannot be empty.", nameof(userId));
+        UserId = userId;
+
+        Name = NormalizeName(name, nameof(name));
+
+        if (!Enum.IsDefined(type))
+            throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown category type.");
+        Type = type;
+
+        if (parentCategoryId == Guid.Empty)
+            throw new ArgumentException("Parent category id cannot be empty.", nameof(parentCategoryId));
+        if (parentCategoryId == id)
+            throw new ArgumentException("Category cannot be its own parent.", nameof(parentCategoryId));
+        ParentCategoryId = parentCategoryId;
+
+        CreatedAt = ValidateCreatedAt(createdAt, nameof(createdAt));
+    }
+
+    public void Rename(string name)
+    {
+        if (IsArchived)
+        {
+            throw new InvalidOperationException("Archived category cannot be renamed.");
+        }
+
+        Name = NormalizeName(name, nameof(name));
+    }
+
+    public void Archive(DateTimeOffset archivedAt)
+    {
+        if (IsArchived)
+        {
+            throw new InvalidOperationException("Category is already archived.");
+        }
+
+        if (archivedAt == default)
+        {
+            throw new ArgumentException(
+                "Archive time must be specified.",
+                nameof(archivedAt));
+        }
+
+        if (archivedAt < CreatedAt)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(archivedAt),
+                "Archive time cannot be earlier than creation time.");
+        }
+
+        IsArchived = true;
+        ArchivedAt = archivedAt;
+    }
+
+    private static string NormalizeName(string? value, string paramName)
     {
         var normalized = value?.Trim();
         if (string.IsNullOrWhiteSpace(normalized))
@@ -52,6 +96,21 @@ public sealed class Category : Entity
             throw new ArgumentException("Value cannot be empty.", paramName);
         }
 
+        if (normalized.Length > MaxNameLength)
+        {
+            throw new ArgumentException($"Value cannot be longer than {MaxNameLength} characters.", paramName);
+        }
+
         return normalized;
+    }
+
+    private static DateTimeOffset ValidateCreatedAt(DateTimeOffset value, string paramName)
+    {
+        if (value == default)
+        {
+            throw new ArgumentException("Creation time must be specified.", paramName);
+        }
+
+        return value;
     }
 }
