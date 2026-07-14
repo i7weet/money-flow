@@ -1,6 +1,7 @@
 using MoneyFlow.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using MoneyFlow.Domain.Common;
 
 namespace MoneyFlow.Infrastructure.Persistence.Configurations;
 
@@ -60,12 +61,12 @@ public sealed class TransactionConfiguration : IEntityTypeConfiguration<Transact
         {
             owned.Property(x => x.Amount)
                 .HasColumnName("amount")
-                .HasPrecision(19, 4)
+                .HasPrecision(19, Money.DefaultScale)
                 .IsRequired();
 
             owned.Property(x => x.CurrencyCode)
                 .HasColumnName("currency_code")
-                .HasMaxLength(3)
+                .HasMaxLength(Money.CurrencyCodeLength)
                 .IsFixedLength()
                 .IsRequired();
         });
@@ -74,11 +75,11 @@ public sealed class TransactionConfiguration : IEntityTypeConfiguration<Transact
         {
             owned.Property(x => x.Amount)
                 .HasColumnName("counter_amount")
-                .HasPrecision(19, 4);
+                .HasPrecision(19, Money.DefaultScale);
 
             owned.Property(x => x.CurrencyCode)
                 .HasColumnName("counter_currency_code")
-                .HasMaxLength(3)
+                .HasMaxLength(Money.CurrencyCodeLength)
                 .IsFixedLength();
         });
 

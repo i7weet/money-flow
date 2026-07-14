@@ -1,6 +1,7 @@
 using MoneyFlow.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using MoneyFlow.Domain.Common;
 
 namespace MoneyFlow.Infrastructure.Persistence.Configurations;
 
@@ -17,7 +18,7 @@ public sealed class AccountConfiguration : IEntityTypeConfiguration<Account>
             .IsRequired();
 
         builder.Property(x => x.CurrencyCode)
-            .HasMaxLength(3)
+            .HasMaxLength(Money.CurrencyCodeLength)
             .IsFixedLength()
             .IsRequired();
 
@@ -45,12 +46,12 @@ public sealed class AccountConfiguration : IEntityTypeConfiguration<Account>
         {
             owned.Property(x => x.Amount)
                 .HasColumnName("opening_balance_amount")
-                .HasPrecision(19, 4)
+                .HasPrecision(19, Money.DefaultScale)
                 .IsRequired();
 
             owned.Property(x => x.CurrencyCode)
                 .HasColumnName("opening_balance_currency_code")
-                .HasMaxLength(3)
+                .HasMaxLength(Money.CurrencyCodeLength)
                 .IsFixedLength()
                 .IsRequired();
         });
