@@ -10,13 +10,24 @@ public sealed class TransactionTagConfiguration : IEntityTypeConfiguration<Trans
     {
         builder.ToTable("transaction_tags");
 
-        builder.HasKey(x => x.Id);
+        builder.HasKey(x => new
+        {
+            x.TransactionId,
+            x.TagId
+        });
 
         builder.Property(x => x.TransactionId).IsRequired();
         builder.Property(x => x.TagId).IsRequired();
 
-        builder.HasIndex(x => new { x.TransactionId, x.TagId })
-            .IsUnique();
+        builder.HasOne<Transaction>()
+            .WithMany()
+            .HasForeignKey(x => x.TransactionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne<Tag>()
+            .WithMany()
+            .HasForeignKey(x => x.TagId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(x => x.TagId);
     }

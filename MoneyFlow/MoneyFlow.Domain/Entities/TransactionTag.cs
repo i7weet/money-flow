@@ -1,14 +1,12 @@
-using MoneyFlow.Domain.Common;
-
 namespace MoneyFlow.Domain.Entities;
 
-public sealed class TransactionTag : Entity
+public sealed class TransactionTag
 {
     private TransactionTag()
     {
     }
 
-    public TransactionTag(Guid transactionId, Guid tagId) : base(Guid.NewGuid())
+    public TransactionTag(Guid transactionId, Guid tagId)
     {
         if (transactionId == Guid.Empty)
         {

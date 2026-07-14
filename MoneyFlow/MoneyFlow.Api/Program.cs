@@ -22,7 +22,7 @@ if (app.Environment.IsDevelopment())
 app.MapGet("/", () => "Hello World!");
 app.MapHealthChecks("/health/live", new HealthCheckOptions
 {
-    Predicate = _ => false 
+    Predicate = _ => false
 });
 app.MapHealthChecks("/health/ready", new HealthCheckOptions
 {

@@ -13,11 +13,11 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Email)
-            .HasMaxLength(320)
+            .HasMaxLength(User.MaxEmailLength)
             .IsRequired();
 
         builder.Property(x => x.PasswordHash)
-            .HasMaxLength(512)
+            .HasMaxLength(User.MaxPasswordHashLength)
             .IsRequired();
 
         builder.Property(x => x.CreatedAt)

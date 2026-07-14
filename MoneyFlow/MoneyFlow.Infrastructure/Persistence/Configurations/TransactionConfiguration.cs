@@ -1,4 +1,3 @@
-using MoneyFlow.Domain.Common;
 using MoneyFlow.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -14,7 +13,16 @@ public sealed class TransactionConfiguration : IEntityTypeConfiguration<Transact
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Description)
-            .HasMaxLength(512)
+            .HasMaxLength(Transaction.MaxDescriptionLength)
+            .IsRequired();
+
+        builder.Property(x => x.UserId)
+            .IsRequired();
+
+        builder.Property(x => x.PrimaryAccountId)
+            .IsRequired();
+
+        builder.Property(x => x.CategoryId)
             .IsRequired();
 
         builder.Property(x => x.Type)
@@ -27,6 +35,26 @@ public sealed class TransactionConfiguration : IEntityTypeConfiguration<Transact
             .IsRequired();
 
         builder.Property(x => x.UpdatedAt);
+
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne<Account>()
+            .WithMany()
+            .HasForeignKey(x => x.PrimaryAccountId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne<Account>()
+            .WithMany()
+            .HasForeignKey(x => x.CounterAccountId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne<Category>()
+            .WithMany()
+            .HasForeignKey(x => x.CategoryId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.OwnsOne(x => x.Amount, owned =>
         {
@@ -59,7 +87,7 @@ public sealed class TransactionConfiguration : IEntityTypeConfiguration<Transact
 
         builder.HasIndex(x => new { x.UserId, x.OccurredAt });
         builder.HasIndex(x => x.PrimaryAccountId);
+        builder.HasIndex(x => x.CounterAccountId);
         builder.HasIndex(x => x.CategoryId);
-        builder.HasIndex(x => x.UserId);
     }
 }

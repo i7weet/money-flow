@@ -106,6 +106,8 @@ namespace MoneyFlow.Infrastructure.Persistence.Migrations
                     b.HasIndex("UserId", "Type", "ParentCategoryId", "Name")
                         .IsUnique();
 
+                    NpgsqlIndexBuilderExtensions.AreNullsDistinct(b.HasIndex("UserId", "Type", "ParentCategoryId", "Name"), false);
+
                     b.ToTable("categories", (string)null);
                 });
 
@@ -179,9 +181,9 @@ namespace MoneyFlow.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("PrimaryAccountId");
+                    b.HasIndex("CounterAccountId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("PrimaryAccountId");
 
                     b.HasIndex("UserId", "OccurredAt");
 
@@ -190,22 +192,15 @@ namespace MoneyFlow.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("MoneyFlow.Domain.Entities.TransactionTag", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("TransactionId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("TagId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("TransactionId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
+                    b.HasKey("TransactionId", "TagId");
 
                     b.HasIndex("TagId");
-
-                    b.HasIndex("TransactionId", "TagId")
-                        .IsUnique();
 
                     b.ToTable("transaction_tags", (string)null);
                 });
@@ -239,6 +234,12 @@ namespace MoneyFlow.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("MoneyFlow.Domain.Entities.Account", b =>
                 {
+                    b.HasOne("MoneyFlow.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.OwnsOne("MoneyFlow.Domain.Common.Money", "OpeningBalance", b1 =>
                         {
                             b1.Property<Guid>("AccountId")
@@ -274,10 +275,48 @@ namespace MoneyFlow.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("ParentCategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("MoneyFlow.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("MoneyFlow.Domain.Entities.Tag", b =>
+                {
+                    b.HasOne("MoneyFlow.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MoneyFlow.Domain.Entities.Transaction", b =>
                 {
+                    b.HasOne("MoneyFlow.Domain.Entities.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MoneyFlow.Domain.Entities.Account", null)
+                        .WithMany()
+                        .HasForeignKey("CounterAccountId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("MoneyFlow.Domain.Entities.Account", null)
+                        .WithMany()
+                        .HasForeignKey("PrimaryAccountId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MoneyFlow.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.OwnsOne("MoneyFlow.Domain.Common.Money", "Amount", b1 =>
                         {
                             b1.Property<Guid>("TransactionId")
@@ -332,6 +371,21 @@ namespace MoneyFlow.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("CounterAmount");
+                });
+
+            modelBuilder.Entity("MoneyFlow.Domain.Entities.TransactionTag", b =>
+                {
+                    b.HasOne("MoneyFlow.Domain.Entities.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MoneyFlow.Domain.Entities.Transaction", null)
+                        .WithMany()
+                        .HasForeignKey("TransactionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

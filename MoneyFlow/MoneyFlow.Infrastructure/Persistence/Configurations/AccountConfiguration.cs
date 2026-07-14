@@ -13,7 +13,7 @@ public sealed class AccountConfiguration : IEntityTypeConfiguration<Account>
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Name)
-            .HasMaxLength(128)
+            .HasMaxLength(Account.MaxNameLength)
             .IsRequired();
 
         builder.Property(x => x.CurrencyCode)
@@ -33,6 +33,14 @@ public sealed class AccountConfiguration : IEntityTypeConfiguration<Account>
 
         builder.Property(x => x.ArchivedAt);
 
+        builder.Property(x => x.UserId)
+            .IsRequired();
+
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.OwnsOne(x => x.OpeningBalance, owned =>
         {
             owned.Property(x => x.Amount)
@@ -46,9 +54,6 @@ public sealed class AccountConfiguration : IEntityTypeConfiguration<Account>
                 .IsFixedLength()
                 .IsRequired();
         });
-
-        builder.Property(x => x.UserId)
-            .IsRequired();
 
         builder.HasIndex(x => new { x.UserId, x.Name })
             .IsUnique();
