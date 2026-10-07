@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using MoneyFlow.Api.Endpoints;
 using MoneyFlow.Api.ErrorHandling;
 using MoneyFlow.Application.Accounts;
 using MoneyFlow.Application.Accounts.CreateAccount;
@@ -40,6 +41,7 @@ app.MapHealthChecks("/health/ready", new HealthCheckOptions
     Predicate = check => check.Tags.Contains("ready")
 });
 
+app.MapAccountEndpoints();
 
 app.Run();
 
