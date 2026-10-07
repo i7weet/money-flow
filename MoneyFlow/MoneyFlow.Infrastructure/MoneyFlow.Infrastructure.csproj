@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\MoneyFlow.Application\MoneyFlow.Application.csproj" />
         <ProjectReference Include="..\MoneyFlow.Domain\MoneyFlow.Domain.csproj" />
     </ItemGroup>
 
