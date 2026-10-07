@@ -1,8 +1,10 @@
 <Solution>
   <Project Path="MoneyFlow.Api.Tests/MoneyFlow.Api.Tests.csproj" />
   <Project Path="MoneyFlow.Api/MoneyFlow.Api.csproj" />
+  <Project Path="MoneyFlow.Application.Tests/MoneyFlow.Application.Tests.csproj" />
   <Project Path="MoneyFlow.Application/MoneyFlow.Application.csproj" />
   <Project Path="MoneyFlow.Domain.Tests/MoneyFlow.Domain.Tests.csproj" />
   <Project Path="MoneyFlow.Domain/MoneyFlow.Domain.csproj" />
+  <Project Path="MoneyFlow.Infrastructure.Tests/MoneyFlow.Infrastructure.Tests.csproj" />
   <Project Path="MoneyFlow.Infrastructure/MoneyFlow.Infrastructure.csproj" />
 </Solution>
