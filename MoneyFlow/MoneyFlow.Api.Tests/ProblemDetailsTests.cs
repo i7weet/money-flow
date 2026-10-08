@@ -11,7 +11,7 @@ using MoneyFlow.Application.Common.Exceptions;
 
 namespace MoneyFlow.Api.Tests;
 
-public sealed class ProblemDetailsTests(WebApplicationFactory<Program> factory) : IClassFixture<WebApplicationFactory<Program>>
+public sealed class ProblemDetailsTests(ApiTestFactory factory) : IClassFixture<ApiTestFactory>
 {
     private readonly HttpClient _client = factory.CreateClient();
     private readonly WebApplicationFactory<Program> _factory = factory;

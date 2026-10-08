@@ -1,10 +1,12 @@
 using MoneyFlow.Application.Common.Exceptions;
+using MoneyFlow.Application.Messaging;
+using MoneyFlow.Contracts.Events;
 using MoneyFlow.Domain.Common;
 using MoneyFlow.Domain.Entities;
 
 namespace MoneyFlow.Application.Accounts.CreateAccount;
 
-public sealed class CreateAccountService(IAccountStore accountStore, TimeProvider timeProvider)
+public sealed class CreateAccountService(IAccountStore accountStore, TimeProvider timeProvider, IAccountCreatedPublisher publisher)
 {
     public async Task<AccountResultDTO> ExecuteAsync(CreateAccountInputDTO input, CancellationToken cancellationToken)
     {
@@ -30,6 +32,8 @@ public sealed class CreateAccountService(IAccountStore accountStore, TimeProvide
             throw new ConflictException($"Account named '{account.Name}' already exists.");
         
         await accountStore.AddAsync(account, cancellationToken);
+        var accountCreated = new AccountCreated(Guid.NewGuid(), account.Id, account.UserId, account.CreatedAt);
+        await publisher.PublishAsync(accountCreated, cancellationToken);
         return new AccountResultDTO(
             account.Id,
             account.UserId,

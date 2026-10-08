@@ -1,6 +1,8 @@
 using MoneyFlow.Application.Accounts;
 using MoneyFlow.Application.Accounts.CreateAccount;
 using MoneyFlow.Application.Common.Exceptions;
+using MoneyFlow.Application.Messaging;
+using MoneyFlow.Contracts.Events;
 using MoneyFlow.Domain.Entities;
 using MoneyFlow.Domain.Enums;
 
@@ -14,13 +16,15 @@ public sealed class CreateAccountServiceTests
     [Fact]
     public async Task ExecuteAsync_ValidInput_AddsAccountAndReturnsDTO()
     {
+        
         var store  = new AccountStoreFake()
         {
             UserExists = true,
             NameExists = false,
         };
         
-        var service = CreateService(store);
+        var publisher = new AccountCreatedPublisherFake();
+        var service = CreateService(store, publisher);
         var input = CreateValidInput();
         
         using var cts = new CancellationTokenSource();
@@ -51,6 +55,13 @@ public sealed class CreateAccountServiceTests
         
         Assert.Equal(3, store.ReceivedTokens.Count);
         Assert.All(store.ReceivedTokens, received => Assert.Equal(cancellationToken, received));
+        
+        var message = Assert.Single(publisher.Messages);
+
+        Assert.NotEqual(Guid.Empty, message.EventId);
+        Assert.Equal(result.Id, message.AccountId);
+        Assert.Equal(result.UserId, message.UserId);
+        Assert.Equal(result.CreatedAt, message.CreatedAt);
     }
     
     [Fact]
@@ -171,7 +182,8 @@ public sealed class CreateAccountServiceTests
         Assert.Equal(0, store.AddCallCount);
     }
     
-    private static CreateAccountService CreateService(AccountStoreFake store) => new (store, new FixedTimeProvider(Now));
+    private static CreateAccountService CreateService(AccountStoreFake store, AccountCreatedPublisherFake? publisher = null) =>
+        new(store, new FixedTimeProvider(Now), publisher ?? new AccountCreatedPublisherFake());
     
     private static CreateAccountInputDTO CreateValidInput() =>
         new (Guid.NewGuid(), "  Main card  ", AccountType.Card, "rub", 1000.12345m);
@@ -242,5 +254,18 @@ public sealed class CreateAccountServiceTests
         DateTimeOffset utcNow) : TimeProvider
     {
         public override DateTimeOffset GetUtcNow() => utcNow;
+    }
+
+    private sealed class AccountCreatedPublisherFake : IAccountCreatedPublisher
+    {
+        public List<AccountCreated> Messages { get; } = [];
+
+        public Task PublishAsync(
+            AccountCreated message,
+            CancellationToken cancellationToken)
+        {
+            Messages.Add(message);
+            return Task.CompletedTask;
+        }
     }
 }

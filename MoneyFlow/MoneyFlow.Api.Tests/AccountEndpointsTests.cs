@@ -165,7 +165,7 @@ public sealed class AccountEndpointsTests
     {
         var store = new AccountStoreFake(existingUserId);
 
-        return new WebApplicationFactory<Program>()
+        return new ApiTestFactory()
             .WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
