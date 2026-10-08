@@ -54,3 +54,6 @@ coverage.*
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+MoneyFlow.Notifications.Worker/appsettings.json
+MoneyFlow.Notifications.Worker/appsettings.Development.json
