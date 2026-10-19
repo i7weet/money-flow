@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\MoneyFlow.Api\MoneyFlow.Api.csproj" />
+      <ProjectReference Include="..\..\src\MoneyFlow.Api\MoneyFlow.Api.csproj" />
     </ItemGroup>
 
 </Project>

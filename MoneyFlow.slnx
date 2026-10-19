@@ -1,0 +1,13 @@
+<Solution>
+  <Project Path="src/MoneyFlow.Api/MoneyFlow.Api.csproj" />
+  <Project Path="src/MoneyFlow.Application/MoneyFlow.Application.csproj" />
+  <Project Path="src/MoneyFlow.Contracts/MoneyFlow.Contracts.csproj" />
+  <Project Path="src/MoneyFlow.Domain/MoneyFlow.Domain.csproj" />
+  <Project Path="src/MoneyFlow.Infrastructure/MoneyFlow.Infrastructure.csproj" />
+  <Project Path="src/MoneyFlow.Notifications.Worker/MoneyFlow.Notifications.Worker.csproj" />
+
+  <Project Path="tests/MoneyFlow.Api.Tests/MoneyFlow.Api.Tests.csproj" />
+  <Project Path="tests/MoneyFlow.Application.Tests/MoneyFlow.Application.Tests.csproj" />
+  <Project Path="tests/MoneyFlow.Domain.Tests/MoneyFlow.Domain.Tests.csproj" />
+  <Project Path="tests/MoneyFlow.Infrastructure.Tests/MoneyFlow.Infrastructure.Tests.csproj" />
+</Solution>

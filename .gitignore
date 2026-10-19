@@ -23,8 +23,8 @@ publish/
 .env
 .env.*
 !.env.example
-MoneyFlow.Api/appsettings.json
-MoneyFlow.Api/appsettings.Development.json
+**/MoneyFlow.Api/appsettings.json
+**/MoneyFlow.Api/appsettings.Development.json
 
 # Docker
 docker-compose.override.yml
@@ -55,5 +55,5 @@ Thumbs.db
 Desktop.ini
 .DS_Store
 
-MoneyFlow.Notifications.Worker/appsettings.json
-MoneyFlow.Notifications.Worker/appsettings.Development.json
+**/MoneyFlow.Notifications.Worker/appsettings.json
+**/MoneyFlow.Notifications.Worker/appsettings.Development.json
