@@ -5,7 +5,6 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
-        <RootNamespace>MoneyFlow.Application.Tests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -20,7 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\MoneyFlow.Application\MoneyFlow.Application.csproj" />
+      <ProjectReference Include="..\..\src\MoneyFlow.Infrastructure\MoneyFlow.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

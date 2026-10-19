@@ -1,8 +1,36 @@
 # MoneyFlow
 
-После сохранения счёта API публикует событие `AccountCreated` в RabbitMQ.
+MoneyFlow — финансовый трекер на C# и .NET 10 для учёта счетов
+и денежных операций.
+
+Сейчас реализованы создание и получение счетов, хранение данных
+в PostgreSQL и публикация события `AccountCreated` через RabbitMQ.
 Отдельное приложение `MoneyFlow.Notifications.Worker` получает событие
 и записывает уведомление в лог.
+
+## Структура репозитория
+
+```text
+money-flow/
+├── src/
+│   ├── MoneyFlow.Api/
+│   ├── MoneyFlow.Application/
+│   ├── MoneyFlow.Contracts/
+│   ├── MoneyFlow.Domain/
+│   ├── MoneyFlow.Infrastructure/
+│   └── MoneyFlow.Notifications.Worker/
+├── tests/
+│   ├── MoneyFlow.Api.Tests/
+│   ├── MoneyFlow.Application.Tests/
+│   ├── MoneyFlow.Domain.Tests/
+│   └── MoneyFlow.Infrastructure.Tests/
+├── MoneyFlow.slnx
+├── NuGet.Config
+├── compose.yaml
+├── .env.example
+├── .gitignore
+└── README.md
+```
 
 ## Требования
 
@@ -19,17 +47,14 @@ dotnet tool install --global dotnet-ef --version 10.0.9
 
 ## Настройка
 
-Из корня репозитория перейдите в папку решения:
-
-```powershell
-cd .\MoneyFlow
-```
+Команды выполняются из корня репозитория, если явно не указан
+переход в другой каталог.
 
 Если локальных файлов конфигурации ещё нет, создайте их по образцам:
 
 - `.env.example` → `.env`;
-- `MoneyFlow.Api/appsettings.example.json` → `MoneyFlow.Api/appsettings.json`;
-- `MoneyFlow.Notifications.Worker/appsettings.example.json` → `MoneyFlow.Notifications.Worker/appsettings.json`.
+- `src/MoneyFlow.Api/appsettings.example.json` → `src/MoneyFlow.Api/appsettings.json`;
+- `src/MoneyFlow.Notifications.Worker/appsettings.example.json` → `src/MoneyFlow.Notifications.Worker/appsettings.json`.
 
 В `.env` задайте параметры PostgreSQL и RabbitMQ.
 
@@ -53,14 +78,21 @@ cd .\MoneyFlow
 
 Локальные файлы с паролями исключены из Git.
 
-## Запуск
+## Сборка
 
-Все команды ниже выполняются из папки `MoneyFlow`.
+Восстановите зависимости и соберите решение:
+
+```powershell
+dotnet restore .\MoneyFlow.slnx
+dotnet build .\MoneyFlow.slnx --no-restore
+```
+
+## Запуск
 
 Запустите PostgreSQL и RabbitMQ:
 
 ```powershell
-docker compose up -d postgres rabbitmq
+docker compose up -d --wait postgres rabbitmq
 docker compose ps
 ```
 
@@ -69,7 +101,7 @@ docker compose ps
 Примените миграции:
 
 ```powershell
-Push-Location .\MoneyFlow.Infrastructure
+Push-Location .\src\MoneyFlow.Infrastructure
 dotnet ef database update --startup-project ..\MoneyFlow.Api
 Pop-Location
 ```
@@ -80,26 +112,61 @@ Pop-Location
 В первом терминале запустите API:
 
 ```powershell
-dotnet run --project .\MoneyFlow.Api --launch-profile http
+dotnet run --project .\src\MoneyFlow.Api --launch-profile http
 ```
 
 Во втором терминале запустите Worker:
 
 ```powershell
-dotnet run --project .\MoneyFlow.Notifications.Worker
+dotnet run --project .\src\MoneyFlow.Notifications.Worker
 ```
 
 Адреса при стандартных настройках:
 
-- API: http://localhost:5026
-- Проверка работы API: http://localhost:5026/health/live
-- Проверка подключения к PostgreSQL: http://localhost:5026/health/ready
-- RabbitMQ Management: http://localhost:15672
+- [API](http://localhost:5026)
+- [Проверка работы API](http://localhost:5026/health/live)
+- [Проверка подключения к PostgreSQL](http://localhost:5026/health/ready)
+- [RabbitMQ Management](http://localhost:15672)
 
 Для входа в RabbitMQ Management используйте логин и пароль из `.env`.
 
 Очередь `account-created` создаётся при запуске Worker
 или при первой публикации события API.
+
+## Тесты
+
+Перед запуском всех тестов соберите решение и запустите PostgreSQL,
+как показано выше.
+
+Для PostgreSQL-теста используется отдельная база
+`moneyflow_issue12_tests`. Учётная запись должна иметь права
+на применение миграций, а если база ещё не существует — на её создание.
+Тест применяет миграции и после выполнения удаляет созданные им данные.
+
+В той же консоли, где будут запускаться тесты, задайте строку подключения
+через скрытый ввод:
+
+```powershell
+$testConnection = Read-Host "Строка подключения к тестовой БД" -AsSecureString
+$env:MONEYFLOW_TEST_CONNECTION_STRING = [System.Net.NetworkCredential]::new("", $testConnection).Password
+```
+
+При запросе введите строку следующего вида, заменив значения в угловых
+скобках параметрами из локального `.env`:
+
+```text
+Host=localhost;Port=<POSTGRES_PORT>;Database=moneyflow_issue12_tests;Username=<POSTGRES_USER>;Password=<POSTGRES_PASSWORD>
+```
+
+Имя тестовой базы должно быть именно `moneyflow_issue12_tests`.
+Переменная действует в текущей консоли и запущенных из неё процессах.
+Тест автоматически не читает `.env`.
+
+Запустите все тесты из корня репозитория:
+
+```powershell
+dotnet test .\MoneyFlow.slnx --no-build
+```
 
 ## Создание счёта
 
@@ -119,7 +186,7 @@ docker compose exec postgres sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"'
 INSERT INTO users ("Id", "Email", "PasswordHash", "CreatedAt")
 VALUES (
     gen_random_uuid(),
-    'rabbitmq-demo@example.invalid',
+    'moneyflow-demo@example.invalid',
     'demo-only-not-a-real-password-hash',
     CURRENT_TIMESTAMP
 )
@@ -127,7 +194,7 @@ ON CONFLICT ("Email") DO NOTHING;
 
 SELECT "Id"
 FROM users
-WHERE "Email" = 'rabbitmq-demo@example.invalid';
+WHERE "Email" = 'moneyflow-demo@example.invalid';
 ```
 
 Значение PasswordHash здесь — заглушка для локальной проверки создания
@@ -140,7 +207,7 @@ $userId = Read-Host "Введите GUID существующего пользо
 
 $body = @{
     userId = $userId.Trim()
-    name = "RabbitMQ test $([Guid]::NewGuid().ToString('N'))"
+    name = "Demo account $([Guid]::NewGuid().ToString('N'))"
     type = "Card"
     currencyCode = "RUB"
     openingBalance = 1000
